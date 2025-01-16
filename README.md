@@ -1,6 +1,7 @@
-# Docker Image for PHP with Apache and SSL
+# Imagenes Docker para PHP con Apache, SSL || Debian, APache y PHP
 
-Este repositorio contiene un `Dockerfile` que construye una imagen de PHP con Apache, configurada para servir páginas web tanto sobre HTTP como sobre HTTPS.
+Este repositorio contiene unas carpetas con un `Dockerfile` que construye imagenes de PHP con Apache, configurada para servir páginas web tanto sobre HTTP como sobre HTTPS.
+Además el primero es de PostgreSQL.
 
 ## Requisitos
 
