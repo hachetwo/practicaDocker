@@ -1,0 +1,36 @@
+# Partimos de la imagen base de Debian
+FROM debian:latest
+
+# Actualizamos repositorios e instalamos dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    php \
+    libapache2-mod-php \
+    openssl \
+    vim \
+    nano \
+    net-tools && \
+    apt-get clean
+
+# Crear los certificados SSL
+RUN mkdir /etc/apache2/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/apache2/ssl/apache.key \
+    -out /etc/apache2/ssl/apache.crt \
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
+
+# Copiar archivos del sitio web al contenedor
+COPY ./html /var/www/html/
+
+# Copiar configuración personalizada de Apache
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+# Habilitar el módulo SSL de Apache y habilitar el sitio
+RUN a2enmod ssl && a2ensite 000-default.conf
+
+# Exponer los puertos necesarios
+EXPOSE 80 443
+
+# Comando para iniciar Apache en primer plano
+CMD ["apachectl", "-D", "FOREGROUND"]
+

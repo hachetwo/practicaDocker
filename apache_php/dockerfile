@@ -1,0 +1,31 @@
+FROM php:apache
+
+# Actualizar repositorios e instalar dependencias
+RUN apt update && \
+    apt install -y vim net-tools openssl
+
+# Copiar los certificados al contenedor
+COPY my_cert.crt /etc/ssl/certs/my_cert.crt
+COPY my_cert.key /etc/ssl/private/my_cert.key
+
+# Habilitar mod_ssl para Apache
+RUN a2enmod ssl
+
+# Crear un archivo de configuración para el VirtualHost de HTTPS
+# Crear un archivo de configuración para el VirtualHost de HTTPS
+RUN echo '<VirtualHost *:443>' > /etc/apache2/sites-available/default-ssl.conf && \
+    echo '    SSLEngine on' >> /etc/apache2/sites-available/default-ssl.conf && \
+    echo '    SSLCertificateFile /etc/ssl/certs/my_cert.crt' >> /etc/apache2/sites-available/default-ssl.conf && \
+    echo '    SSLCertificateKeyFile /etc/ssl/private/my_cert.key' >> /etc/apache2/sites-available/default-ssl.conf && \
+    echo '    DocumentRoot /var/www/html' >> /etc/apache2/sites-available/default-ssl.conf && \
+    echo '</VirtualHost>' >> /etc/apache2/sites-available/default-ssl.conf
+
+# Habilitar el VirtualHost de SSL
+RUN a2ensite default-ssl.conf
+
+# Exponer los puertos HTTP y HTTPS
+EXPOSE 80 443
+
+# Iniciar Apache en primer plano
+CMD ["apache2-foreground"]
+
